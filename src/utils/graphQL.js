@@ -1,19 +1,22 @@
 const fetchGraphQL = (graphQLUrl, url, credentials, app, query) => {
-	const fetchUrl = credentials ? url.replace('//', `//${credentials}@`) : url;
+	//const fetchUrl = credentials ? url.replace('//', `//${credentials}@`) : url;
+
+	const mSearchBody = query.map(item => JSON.stringify(item));
+
+	const query = {
+		elastic72: {
+			msearch: {
+				index: app,
+				body: mSearchBody
+			}
+		}
+	}
+
 	return fetch(graphQLUrl, {
 		method: 'POST',
-		body: `
-			query{
-				elastic50(host: "${fetchUrl}"){
-					msearch(
-						index: "${app}"
-						body: ${JSON.stringify(query.map(item => JSON.stringify(item)))}
-					)
-				}
-			}
-		`,
+		body: JSON.stringify(query),
 		headers: {
-			'Content-Type': 'application/graphql',
+			'Content-Type': 'application/json',
 		},
 	})
 		.then(res => res.json())
